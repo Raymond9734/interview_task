@@ -1,15 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import Navigation from '../../components/Navigation';
 import LocationPin from '../../components/LocationPin';
 import Map from '../../components/Map';
 
-export default function Locations({ locations, user }) {
+export default function Locations({ user_locations, other_locations, user }) {
   const [selectedLocation, setSelectedLocation] = useState(null);
+  const [mapCenter, setMapCenter] = useState([-0.0236, 37.9062]);
+  const [mapZoom, setMapZoom] = useState(6);
+  const mapRef = useRef(null);
   const { delete: destroy, processing } = useForm();
 
+
+
   const handleEdit = (location) => {
-    // Navigate to edit page
     window.location.href = `/locations/${location.id}/edit`;
   };
 
@@ -19,97 +23,134 @@ export default function Locations({ locations, user }) {
     }
   };
 
-  const handleMarkerClick = (location) => {
+  const handleLocationClick = (location) => {
+   
+
+    // Parse coordinates to ensure they're numbers
+    const lat = parseFloat(location.latitude);
+    const lng = parseFloat(location.longitude);
+
     setSelectedLocation(location);
+    setMapCenter([lat, lng]);
+    setMapZoom(16); // Zoom in closer when a location is selected
   };
+
+  // Combine all locations for the map
+  const allLocations = [...user_locations, ...other_locations];
+
 
   return (
     <>
-      <Head title="My Locations" />
+      <Head title="Locations" />
       <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
         <Navigation user={user} />
         
-        <div className="py-10">
+        <div className="py-6">
           <header>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <h1 className="text-3xl font-bold leading-tight text-amber-900 font-[Poppins]">My Locations</h1>
+              <div className="flex justify-between items-center">
+                <h1 className="text-3xl font-bold leading-tight text-amber-900 font-[Poppins]">Locations</h1>
+                <Link
+                  href="/locations/new"
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-xl shadow-sm text-white bg-gradient-to-r from-amber-700 to-amber-800 hover:from-amber-800 hover:to-amber-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-600 transform transition-all duration-300 hover:scale-[1.02]"
+                >
+                  Add New Location
+                </Link>
+              </div>
             </div>
           </header>
           <main>
             <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-              <div className="px-4 py-8 sm:px-0">
-                <div className="bg-white/60 backdrop-blur-md shadow-xl overflow-hidden sm:rounded-3xl transition-all duration-300 hover:shadow-2xl">
-                  <div className="px-4 py-5 sm:px-6 flex justify-between items-center">
-                    <div>
-                      <h3 className="text-lg leading-6 font-medium text-amber-900">Your Pinned Locations</h3>
-                      <p className="mt-1 max-w-2xl text-sm text-amber-700">
-                        Manage your locations and add new ones.
-                      </p>
+              <div className="px-4 py-6 sm:px-0">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  {/* Map Section */}
+                  <div className="lg:col-span-2">
+                    <div className="bg-white/60 backdrop-blur-md shadow-xl overflow-hidden sm:rounded-3xl transition-all duration-300 hover:shadow-2xl h-full">
+                      <div className="px-4 py-5 sm:px-6">
+                        <h3 className="text-lg leading-6 font-medium text-amber-900">Map View</h3>
+                        <p className="mt-1 max-w-2xl text-sm text-amber-700">
+                          Click on a location in the list to zoom to it on the map.
+                        </p>
+                      </div>
+                      <div className="px-4 py-5 sm:p-6">
+                        <div className="h-[500px] rounded-xl overflow-hidden shadow-lg">
+                          <Map
+                            ref={mapRef}
+                            locations={allLocations}
+                            center={mapCenter}
+                            zoom={mapZoom}
+                            user={user}
+                            selectedLocation={selectedLocation}
+                          />
+                        </div>
+                      </div>
                     </div>
-                    <Link
-                      href="/locations/new"
-                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-xl shadow-sm text-white bg-gradient-to-r from-amber-700 to-amber-800 hover:from-amber-800 hover:to-amber-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-600 transform transition-all duration-300 hover:scale-[1.02]"
-                    >
-                      Add New Location
-                    </Link>
                   </div>
                   
-                  <div className="px-4 py-5 sm:p-6">
-                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                      <div>
-                        <h4 className="text-md font-medium text-amber-900 mb-4">Location List</h4>
-                        {locations.length > 0 ? (
-                          <div>
-                            {locations.map((location) => (
-                              <LocationPin
-                                key={location.id}
-                                location={location}
-                                onEdit={handleEdit}
-                                onDelete={handleDelete}
-                              />
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="text-center py-12 bg-amber-50/20 rounded-xl">
-                            <svg
-                              className="mx-auto h-12 w-12 text-amber-400"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                              aria-hidden="true"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"
-                              />
-                            </svg>
-                            <h3 className="mt-2 text-sm font-medium text-amber-900">No locations</h3>
-                            <p className="mt-1 text-sm text-amber-700">
-                              Get started by creating a new location.
-                            </p>
-                            <div className="mt-6">
-                              <Link
-                                href="/locations/new"
-                                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-xl text-white bg-gradient-to-r from-amber-700 to-amber-800 hover:from-amber-800 hover:to-amber-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-600 transform transition-all duration-300 hover:scale-[1.02]"
-                              >
-                                Add New Location
-                              </Link>
+                  {/* Locations List Section */}
+                  <div>
+                    <div className="space-y-6">
+                      {/* User's Locations */}
+                      <div className="bg-white/60 backdrop-blur-md shadow-xl overflow-hidden sm:rounded-3xl transition-all duration-300 hover:shadow-2xl">
+                        <div className="px-4 py-5 sm:px-6">
+                          <h3 className="text-lg leading-6 font-medium text-amber-900">Your Locations</h3>
+                          <p className="mt-1 max-w-2xl text-sm text-amber-700">
+                            Click on a location to zoom to it on the map.
+                          </p>
+                        </div>
+                        <div className="px-4 py-5 sm:p-6">
+                          {user_locations.length > 0 ? (
+                            <div className="space-y-4">
+                              {user_locations.map((location) => (
+                                <LocationPin
+                                  key={location.id}
+                                  location={location}
+                                  onEdit={handleEdit}
+                                  onDelete={handleDelete}
+                                  isSelected={selectedLocation && selectedLocation.id === location.id}
+                                  onClick={() => handleLocationClick(location)}
+                                  showActions={true}
+                                />
+                              ))}
                             </div>
-                          </div>
-                        )}
+                          ) : (
+                            <div className="text-center py-6">
+                              <p className="text-sm text-amber-700">
+                                You haven't added any locations yet.
+                              </p>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                      
-                      <div>
-                        <h4 className="text-md font-medium text-amber-900 mb-4">Map View</h4>
-                        <div className="rounded-xl overflow-hidden shadow-lg">
-                          <Map
-                            locations={locations}
-                            onMarkerClick={handleMarkerClick}
-                            center={selectedLocation ? [selectedLocation.latitude, selectedLocation.longitude] : [51.505, -0.09]}
-                            zoom={selectedLocation ? 15 : 13}
-                          />
+
+                      {/* Other Users' Locations */}
+                      <div className="bg-white/60 backdrop-blur-md shadow-xl overflow-hidden sm:rounded-3xl transition-all duration-300 hover:shadow-2xl">
+                        <div className="px-4 py-5 sm:px-6">
+                          <h3 className="text-lg leading-6 font-medium text-amber-900">Other Locations</h3>
+                          <p className="mt-1 max-w-2xl text-sm text-amber-700">
+                            Click on a location to view it on the map.
+                          </p>
+                        </div>
+                        <div className="px-4 py-5 sm:p-6">
+                          {other_locations.length > 0 ? (
+                            <div className="space-y-4">
+                              {other_locations.map((location) => (
+                                <LocationPin
+                                  key={location.id}
+                                  location={location}
+                                  isSelected={selectedLocation && selectedLocation.id === location.id}
+                                  onClick={() => handleLocationClick(location)}
+                                  showActions={false}
+                                />
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="text-center py-6">
+                              <p className="text-sm text-amber-700">
+                                No locations from other users yet.
+                              </p>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
