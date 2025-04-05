@@ -3,7 +3,7 @@ import { Head, useForm } from '@inertiajs/react';
 import Navigation from '../../components/Navigation';
 import Map from '../../components/Map';
 
-export default function Edit({ location, user }) {
+export default function Edit({ location, user, allLocations = [] }) {
   const { data, setData, put, processing, errors } = useForm({
     name: location.name,
     latitude: location.latitude,
@@ -11,6 +11,26 @@ export default function Edit({ location, user }) {
   });
 
   const [selectedPosition, setSelectedPosition] = useState([location.latitude, location.longitude]);
+  const [currentPosition, setCurrentPosition] = useState(null);
+  const [locationPermission, setLocationPermission] = useState(null);
+
+  // Get current position from local storage
+  React.useEffect(() => {
+    const savedPermission = localStorage.getItem('locationPermission');
+    setLocationPermission(savedPermission);
+    
+    if (savedPermission === 'granted') {
+      const savedPosition = localStorage.getItem('userPosition');
+      if (savedPosition) {
+        try {
+          const position = JSON.parse(savedPosition);
+          setCurrentPosition(position);
+        } catch (error) {
+          // Error parsing saved position
+        }
+      }
+    }
+  }, []);
 
   const handleMapClick = (e) => {
     const { lat, lng } = e.latlng;
@@ -29,11 +49,11 @@ export default function Edit({ location, user }) {
 
   return (
     <>
-      <Head title="Edit Location" />
+      <Head title={`Edit ${location.name}`} />
       <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
         <Navigation user={user} />
         
-        <div className="py-10">
+        <div className="py-6">
           <header>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <h1 className="text-3xl font-bold leading-tight text-amber-900 font-[Poppins]">Edit Location</h1>
@@ -41,8 +61,9 @@ export default function Edit({ location, user }) {
           </header>
           <main>
             <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-              <div className="px-4 py-8 sm:px-0">
-                <div className="bg-white/60 backdrop-blur-md shadow-xl overflow-hidden sm:rounded-3xl transition-all duration-300 hover:shadow-2xl">
+              <div className="px-4 py-6 sm:px-0">
+                {/* Form Section */}
+                <div className="bg-white/60 backdrop-blur-md shadow-xl overflow-hidden sm:rounded-3xl transition-all duration-300 hover:shadow-2xl mb-6">
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="px-4 py-5 sm:p-6">
                       <div className="grid grid-cols-1 gap-6">
@@ -58,6 +79,7 @@ export default function Edit({ location, user }) {
                               value={data.name}
                               onChange={(e) => setData('name', e.target.value)}
                               className="appearance-none relative block w-full px-4 py-3 border-0 border-b-2 border-amber-300/50 bg-amber-50/20 placeholder-amber-700/50 text-amber-950 rounded-xl focus:outline-none focus:ring-0 focus:border-amber-600/50 focus:bg-amber-50/30 transition-all duration-300 ease-in-out sm:text-sm"
+                              required
                             />
                             {errors.name && (
                               <p className="mt-2 text-sm text-red-500">{errors.name}</p>
@@ -78,6 +100,7 @@ export default function Edit({ location, user }) {
                               value={data.latitude}
                               onChange={(e) => setData('latitude', parseFloat(e.target.value))}
                               className="appearance-none relative block w-full px-4 py-3 border-0 border-b-2 border-amber-300/50 bg-amber-50/20 placeholder-amber-700/50 text-amber-950 rounded-xl focus:outline-none focus:ring-0 focus:border-amber-600/50 focus:bg-amber-50/30 transition-all duration-300 ease-in-out sm:text-sm"
+                              required
                             />
                             {errors.latitude && (
                               <p className="mt-2 text-sm text-red-500">{errors.latitude}</p>
@@ -98,39 +121,45 @@ export default function Edit({ location, user }) {
                               value={data.longitude}
                               onChange={(e) => setData('longitude', parseFloat(e.target.value))}
                               className="appearance-none relative block w-full px-4 py-3 border-0 border-b-2 border-amber-300/50 bg-amber-50/20 placeholder-amber-700/50 text-amber-950 rounded-xl focus:outline-none focus:ring-0 focus:border-amber-600/50 focus:bg-amber-50/30 transition-all duration-300 ease-in-out sm:text-sm"
+                              required
                             />
                             {errors.longitude && (
                               <p className="mt-2 text-sm text-red-500">{errors.longitude}</p>
                             )}
                           </div>
                         </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-amber-800">
-                            Select Location on Map
-                          </label>
-                          <div className="mt-1 h-96 rounded-xl overflow-hidden shadow-lg">
-                            <Map
-                              locations={[location]}
-                              onMapClick={handleMapClick}
-                              center={selectedPosition}
-                              zoom={15}
-                            />
-                          </div>
-                        </div>
                       </div>
                     </div>
-
-                    <div className="px-4 py-3 bg-amber-50/20 text-right sm:px-6">
+                    <div className="px-4 py-3 bg-amber-50/30 text-right sm:px-6">
                       <button
                         type="submit"
                         disabled={processing}
-                        className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-xl text-white bg-gradient-to-r from-amber-700 to-amber-800 hover:from-amber-800 hover:to-amber-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-600 transform transition-all duration-300 hover:scale-[1.02] disabled:opacity-70"
+                        className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-gradient-to-r from-amber-700 to-amber-800 hover:from-amber-800 hover:to-amber-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 transition-all duration-300"
                       >
                         {processing ? 'Saving...' : 'Save Changes'}
                       </button>
                     </div>
                   </form>
+                </div>
+                
+                {/* Map Section */}
+                <div className="bg-white/60 backdrop-blur-md shadow-xl overflow-hidden sm:rounded-3xl transition-all duration-300 hover:shadow-2xl">
+                  <div className="px-4 py-5 sm:p-6">
+                    <h2 className="text-lg font-medium text-amber-900 mb-2">Select Location on Map</h2>
+                    <p className="text-sm text-amber-700 mb-4">
+                      Click on the map to set the location coordinates, or use your current position.
+                    </p>
+                    <div className="h-[500px] rounded-xl overflow-hidden shadow-lg">
+                      <Map
+                        locations={allLocations}
+                        onMapClick={handleMapClick}
+                        center={selectedPosition}
+                        zoom={15}
+                        user={user}
+                        currentPosition={currentPosition}
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
