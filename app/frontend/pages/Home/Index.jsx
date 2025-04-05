@@ -33,7 +33,72 @@ export default function Home({ locations, user }) {
                     </div>
                     <div className="px-4 py-5 sm:p-6">
                       <div className="h-[500px]">
-                        <Map locations={locations} />
+                        <Map locations={locations} user={user} />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Map Legend Section */}
+                  <div className="bg-white/60 backdrop-blur-md shadow-xl overflow-hidden sm:rounded-3xl transition-all duration-300 hover:shadow-2xl">
+                    <div className="px-4 py-5 sm:px-6">
+                      <h3 className="text-lg leading-6 font-medium text-amber-900">Map Legend</h3>
+                      <p className="mt-1 max-w-2xl text-sm text-amber-700">
+                        Understanding location markers on the map
+                      </p>
+                    </div>
+                    <div className="px-4 py-5 sm:p-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        {/* Your Locations */}
+                        <div className="flex items-center space-x-3 p-3 bg-white/40 rounded-xl">
+                          <img 
+                            src="/images/markers/marker-amber.png" 
+                            alt="Your location marker" 
+                            className="h-8"
+                          />
+                          <div>
+                            <h4 className="text-sm font-medium text-amber-900">Your Locations</h4>
+                            <p className="text-xs text-amber-700">Locations you've pinned</p>
+                          </div>
+                        </div>
+
+                        {/* Other Users' Locations */}
+                        <div className="flex items-center space-x-3 p-3 bg-white/40 rounded-xl">
+                          <img 
+                            src="/images/markers/marker-blue.png" 
+                            alt="Other users' location marker" 
+                            className="h-8"
+                          />
+                          <div>
+                            <h4 className="text-sm font-medium text-amber-900">Other Users</h4>
+                            <p className="text-xs text-amber-700">Locations pinned by others</p>
+                          </div>
+                        </div>
+
+                        {/* Admin Locations */}
+                        <div className="flex items-center space-x-3 p-3 bg-white/40 rounded-xl">
+                          <img 
+                            src="/images/markers/marker-red.png" 
+                            alt="Admin location marker" 
+                            className="h-8"
+                          />
+                          <div>
+                            <h4 className="text-sm font-medium text-amber-900">Admin Locations</h4>
+                            <p className="text-xs text-amber-700">Locations pinned by admins</p>
+                          </div>
+                        </div>
+
+                        {/* Current Location */}
+                        <div className="flex items-center space-x-3 p-3 bg-white/40 rounded-xl">
+                          <img 
+                            src="/images/markers/marker-green.png" 
+                            alt="Current location marker" 
+                            className="h-8"
+                          />
+                          <div>
+                            <h4 className="text-sm font-medium text-amber-900">Current Location</h4>
+                            <p className="text-xs text-amber-700">Your current position</p>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
