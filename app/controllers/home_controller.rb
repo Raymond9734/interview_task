@@ -4,7 +4,7 @@ class HomeController < ApplicationController
   def index
     locations = Location.all.includes(:user)
     render inertia: 'Home/Index', props: { 
-      locations: locations,
+      locations: locations.as_json(include: { user: { only: [:id, :username, :role] } }),
       user: current_user
     }
   end
