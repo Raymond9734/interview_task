@@ -1,11 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import Navigation from '../../components/Navigation';
 import Map from '../../components/Map';
 
-export default function Show({ location, user }) {
+export default function Show({ location, user, allLocations = [] }) {
   const isOwner = user && user.id === location.user_id;
   const isAdmin = user && user.role === 'admin';
+  const [currentPosition, setCurrentPosition] = useState(null);
+
+  // Get current position from local storage
+  React.useEffect(() => {
+    const savedPermission = localStorage.getItem('locationPermission');
+    
+    if (savedPermission === 'granted') {
+      const savedPosition = localStorage.getItem('userPosition');
+      if (savedPosition) {
+        try {
+          const position = JSON.parse(savedPosition);
+          setCurrentPosition(position);
+        } catch (error) {
+          // Error parsing saved position
+        }
+      }
+    }
+  }, []);
 
   return (
     <>
@@ -44,24 +62,26 @@ export default function Show({ location, user }) {
                   <div className="px-4 py-5 sm:px-6">
                     <h3 className="text-lg leading-6 font-medium text-amber-900">Location Details</h3>
                     <p className="mt-1 max-w-2xl text-sm text-amber-700">
-                      Information about this pinned location.
+                      Information about this location.
                     </p>
                   </div>
                   <div className="border-t border-amber-200/50">
                     <dl>
-                      <div className="bg-amber-50/20 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                        <dt className="text-sm font-medium text-amber-800">Location Name</dt>
+                      <div className="bg-amber-50/30 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt className="text-sm font-medium text-amber-800">Name</dt>
                         <dd className="mt-1 text-sm text-amber-900 sm:mt-0 sm:col-span-2">{location.name}</dd>
                       </div>
                       <div className="bg-white/60 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                         <dt className="text-sm font-medium text-amber-800">Coordinates</dt>
                         <dd className="mt-1 text-sm text-amber-900 sm:mt-0 sm:col-span-2">
-                          Latitude: {location.latitude}, Longitude: {location.longitude}
+                          {location.latitude}, {location.longitude}
                         </dd>
                       </div>
-                      <div className="bg-amber-50/20 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                      <div className="bg-amber-50/30 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                         <dt className="text-sm font-medium text-amber-800">Added By</dt>
-                        <dd className="mt-1 text-sm text-amber-900 sm:mt-0 sm:col-span-2">{location.user.username}</dd>
+                        <dd className="mt-1 text-sm text-amber-900 sm:mt-0 sm:col-span-2">
+                          {location.user?.username || 'Unknown'}
+                        </dd>
                       </div>
                       <div className="bg-white/60 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                         <dt className="text-sm font-medium text-amber-800">Added On</dt>
@@ -79,11 +99,14 @@ export default function Show({ location, user }) {
                       <h3 className="text-lg leading-6 font-medium text-amber-900">Location on Map</h3>
                     </div>
                     <div className="px-4 py-5 sm:p-6">
-                      <div className="h-96 rounded-xl overflow-hidden shadow-lg">
+                      <div className="h-[500px] rounded-xl overflow-hidden shadow-lg">
                         <Map
-                          locations={[location]}
-                          center={[location.latitude, location.longitude]}
+                          locations={allLocations}
+                          center={[parseFloat(location.latitude), parseFloat(location.longitude)]}
                           zoom={15}
+                          user={user}
+                          selectedLocation={location}
+                          currentPosition={currentPosition}
                         />
                       </div>
                     </div>
