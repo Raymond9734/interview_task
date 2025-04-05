@@ -37,7 +37,6 @@ class RegistrationsController < ApplicationController
                       params.permit(:email, :username, :password, :password_confirmation)
                     end
     
-    Rails.logger.debug "Processed params: #{params_to_use.inspect}"
     params_to_use
   end
 end 
