@@ -8,25 +8,16 @@ nixPkgs = [
 version = "18.19.0"
 nodeEnv = "production"
 
-[phases.setup.before]
-cmds = [
-  'mkdir -p /app',
-  'cp -r . /app/',
-  'cd /app',
-  # Debug output
-  'echo "Current directory: $(pwd)"',
-  'echo "Contents of /app:"',
-  'ls -la /app'
-]
+# Set the working directory
+workdir = "/app"
+
+# Simple copy phase - copy everything
+[phases.copy]
+path = "."
 
 [phases.install]
 cmds = [
-  # Ensure correct directory
-  'cd /app || exit 1',
-  # Debug output
-  'pwd',
-  'ls -la',
-  # Install dependencies
+  'cd /app',
   'npm config set legacy-peer-deps true',
   'npm install --omit=dev',
   'bundle config set --local path "vendor/bundle"',
@@ -41,7 +32,7 @@ cmds = [
 ]
 
 [start]
-cmd = 'cd /app && bundle exec rails server -p ${PORT:-3000} -e production'
+cmd = 'bundle exec rails server -p ${PORT:-3000} -e production'
 
 [variables]
 NODE_ENV = "production"
