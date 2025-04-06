@@ -10,4 +10,8 @@ class User < ApplicationRecord
   def admin?
     role == 'admin'
   end
+
+  def locations_count
+    locations.size
+  end
 end 
