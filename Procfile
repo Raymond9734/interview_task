@@ -1,3 +1,1 @@
-web: bin/rails server
-css: bin/rails tailwindcss:watch
-vite: bin/vite dev
+web: bundle exec rails server -p ${PORT:-3000} -e production
