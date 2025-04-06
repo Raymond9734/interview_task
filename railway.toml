@@ -3,7 +3,6 @@ builder = "nixpacks"
 buildCommand = "bundle install && bundle exec rake assets:precompile"
 
 [deploy]
-startCommand = "bundle exec rails server"
 restartPolicyType = "on_failure"
 
 [database]
