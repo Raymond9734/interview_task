@@ -24,7 +24,8 @@ ENV RAILS_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development" \
-    RAILS_MASTER_KEY=48fcd5dd9d5aa3ff9a710be71c075382
+    RAILS_MASTER_KEY=48fcd5dd9d5aa3ff9a710be71c075382 \
+    DATABASE_URL=postgresql://postgres:oxuGvLTMAWMPVWIRsmtOKrqsRrhCybZN@caboose.proxy.rlwy.net:48262/railway
 
 # Install PostgreSQL client and development libraries
 RUN apt-get update && apt-get install -y \
