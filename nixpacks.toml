@@ -5,23 +5,29 @@ nixPkgs = [
 ]
 
 [phases.setup.nodejs]
-provider = "nodejs-slim"
 version = "18.19.0"
-installMethod = "standalone"
+nodeEnv = "production"
 
 [phases.install]
 cmds = [
-  # Remove any existing Node.js installations
-  'rm -rf /usr/local/bin/node /usr/local/bin/npm',
-  # Install dependencies
+  # NPM setup
   'npm config set legacy-peer-deps true',
+  # Use regular npm install instead of npm ci for more flexibility
+  'npm install --production',
+  # Bundle install for Ruby dependencies
   'bundle install --deployment --without development test',
-  'npm ci --production'
+  # Run Vite upgrade
+  'bundle exec vite upgrade'
 ]
 
 [phases.build]
 cmds = [
-  'NODE_ENV=production npm run build',
+  # Clear any existing builds
+  'rm -rf public/assets public/vite',
+  # Setup Vite
+  'bundle exec vite install',
+  # Build assets
+  'RAILS_ENV=production bundle exec vite build',
   'RAILS_ENV=production bundle exec rails assets:precompile'
 ]
 
@@ -29,4 +35,5 @@ cmds = [
 cmd = 'bundle exec rails server -p ${PORT:-3000} -e production'
 
 [variables]
-NODE_VERSION = "18.19.0"
+NODE_ENV = "production"
+RAILS_ENV = "production"
