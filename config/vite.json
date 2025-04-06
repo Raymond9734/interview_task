@@ -10,7 +10,11 @@
   },
   "test": {
     "autoBuild": true,
-    "publicOutputDir": "vite-test",
-    "port": 3037
+    "publicOutputDir": "vite-test"
+  },
+  "production": {
+    "autoBuild": true,
+    "publicOutputDir": "vite",
+    "hmr": false
   }
 }

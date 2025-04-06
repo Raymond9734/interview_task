@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 export PORT="${PORT:-3000}"
 
@@ -15,9 +15,14 @@ then
   exit $?
 fi
 
-if gem list --no-installed --exact --silent foreman; then
+if ! command -v foreman &> /dev/null
+then
   echo "Installing foreman..."
   gem install foreman
 fi
 
-foreman start -f Procfile.dev "$@"
+# Set the Rails environment
+export RAILS_ENV=development
+
+# Start the development server
+exec foreman start -f Procfile.dev "$@"

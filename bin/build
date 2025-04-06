@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# exit on error
+set -o errexit
+
+# Install dependencies
+yarn install
+
+# Build Vite assets
+bundle exec rails vite:build
+
+# Precompile assets
+bundle exec rails assets:precompile
+
+# Prepare database (only in production)
+./bin/prepare-db 

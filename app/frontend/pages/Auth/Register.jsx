@@ -77,7 +77,7 @@ export default function Register({ errors = {}, user = {} }) {
                   onChange={(e) => setData('role', e.target.value)}
                   className="appearance-none relative block w-full px-4 py-3 border-0 border-b-2 border-amber-300/50 bg-amber-50/20  text-amber-950 rounded-xl focus:outline-none focus:ring-0 focus:border-amber-600/50 focus:bg-amber-50/30 transition-all duration-300 ease-in-out sm:text-sm"
                 >
-                  <option value="" disabled selected className="text-amber-700/50">Choose your account type</option>
+                  <option value="" disabled className="text-amber-700/50">Choose your account type</option>
                   <option value="user" className="text-amber-950 ">Personal Account</option>
                   <option value="admin" className="text-amber-950 bg-amber-50">Administrative Account</option>
                 </select>

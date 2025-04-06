@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# exit on error
+set -o errexit
+
+# Only run database commands if in production
+if [ "$RAILS_ENV" = "production" ]; then
+  # Create database if it doesn't exist
+  bundle exec rails db:create
+  
+  # Run migrations
+  bundle exec rails db:migrate
+  
+  # Seed data if needed
+  # bundle exec rails db:seed
+fi 
