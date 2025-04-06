@@ -1,0 +1,17 @@
+[phases.setup]
+nixPkgs = ['nodejs', 'yarn', 'postgresql']
+
+[phases.install]
+cmds = [
+  'bundle install --without development test'
+]
+
+[phases.build]
+cmds = [
+  'yarn install',
+  'bundle exec rails assets:precompile',
+  'bundle exec rails vite:build'
+]
+
+[start]
+cmd = 'bundle exec rails server' 
