@@ -4,7 +4,10 @@ class DashboardController < ApplicationController
 
   def index
     users = User.all.includes(:locations)
-    render inertia: 'Dashboard/Index', props: { users: users }
+    render inertia: 'Dashboard/Index', props: { 
+      users: users.as_json(methods: [:locations_count], except: [:password_digest]),
+      user: current_user.as_json(methods: [:locations_count], except: [:password_digest])
+    }
   end
 
   def destroy_user
