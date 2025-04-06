@@ -9,4 +9,7 @@ export default defineConfig({
     tailwindcss(),
     RubyPlugin(),
   ],
+  server: {
+    hmr: false  // Disable HMR
+  }
 })
