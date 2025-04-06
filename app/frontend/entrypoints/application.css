@@ -1,4 +1,8 @@
-@import "tailwindcss";
+/* @import "tailwindcss"; */
+
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
 /* @plugin "@tailwindcss/typography";
 @plugin "@tailwindcss/forms"; */
