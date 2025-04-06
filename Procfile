@@ -1,1 +1,3 @@
-web: bundle exec rails server -p $PORT 
+web: bin/rails server
+css: bin/rails tailwindcss:watch
+vite: bin/vite dev
