@@ -24,16 +24,11 @@ cmds = [
   'bundle install --deployment --without development test'
 ]
 
+# Build phase is now handled by railway.json
 [phases.build]
-cmds = [
-  'cd /app',
-  'npm run build',
-  'RAILS_ENV=production bundle exec rails assets:precompile'
-]
+cmds = []
 
-[start]
-cmd = 'bundle exec rails server -p ${PORT:-3000} -e production'
-
+# Start command is now handled by railway.json
 [variables]
 NODE_ENV = "production"
 RAILS_ENV = "production"
