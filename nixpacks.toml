@@ -8,31 +8,43 @@ nixPkgs = [
 version = "18.19.0"
 nodeEnv = "production"
 
+# Define the working directory
+[phases.setup.working_dir]
+path = "/app"
+
+# Copy necessary files
+[phases.copy]
+paths = [
+  ["package.json", "/app/package.json"],
+  ["package-lock.json", "/app/package-lock.json"],
+  ["Gemfile", "/app/Gemfile"],
+  ["Gemfile.lock", "/app/Gemfile.lock"],
+  [".", "/app"]
+]
+
 [phases.install]
 cmds = [
-  # NPM setup
+  # Ensure we're in the correct directory
+  'cd /app',
+  # Set npm config
   'npm config set legacy-peer-deps true',
-  # Use regular npm install instead of npm ci for more flexibility
-  'npm install --production',
-  # Bundle install for Ruby dependencies
-  'bundle install --deployment --without development test',
-  # Run Vite upgrade
-  'bundle exec vite upgrade'
+  # Install production dependencies
+  'npm install --omit=dev',
+  # Install Ruby dependencies
+  'bundle config set --local path "vendor/bundle"',
+  'bundle install --deployment --without development test'
 ]
 
 [phases.build]
 cmds = [
-  # Clear any existing builds
-  'rm -rf public/assets public/vite',
-  # Setup Vite
-  'bundle exec vite install',
+  'cd /app',
   # Build assets
-  'RAILS_ENV=production bundle exec vite build',
-  'RAILS_ENV=production bundle exec rails assets:precompile'
+  'npm run build',
+  'bundle exec rails assets:precompile RAILS_ENV=production'
 ]
 
 [start]
-cmd = 'bundle exec rails server -p ${PORT:-3000} -e production'
+cmd = 'cd /app && bundle exec rails server -p ${PORT:-3000} -e production'
 
 [variables]
 NODE_ENV = "production"
