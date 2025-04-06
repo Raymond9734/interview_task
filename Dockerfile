@@ -31,6 +31,24 @@ RUN apt-get update && apt-get install -y \
     postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
+# Install Node.js and npm
+# Option 1: Using NodeSource (recommended for specific versions)
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get update \
+    && apt-get install -y \
+    nodejs \
+    libpq-dev \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
+
+# Option 2: Or using the default package manager (if you don't need a specific version)
+# RUN apt-get update && apt-get install -y \
+#     nodejs \
+#     npm \
+#     libpq-dev \
+#     postgresql-client \
+#     && rm -rf /var/lib/apt/lists/*
+
 # Throw-away build stage to reduce size of final image
 FROM base AS build
 
@@ -48,11 +66,21 @@ RUN bundle install && \
 # Copy application code
 COPY . .
 
+# Copy package.json and install npm dependencies first
+COPY package.json package-lock.json ./
+RUN npm install
+
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
 
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
 RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
+
+# Build Vite assets
+RUN npm run build
+
+# Precompile Rails assets
+RUN bundle exec rails assets:precompile
 
 # Final stage for app image
 FROM base
