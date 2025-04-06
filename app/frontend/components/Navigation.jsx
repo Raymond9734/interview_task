@@ -12,6 +12,7 @@ export default function Navigation({ user }) {
     destroy('/logout');
   };
 
+
   return (
     <nav className="bg-white/60 backdrop-blur-md shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -43,6 +44,14 @@ export default function Navigation({ user }) {
                   >
                     Add Location
                   </Link>
+                  {user.role === 'admin' && (
+                    <Link
+                      href="/dashboard"
+                      className="border-transparent text-amber-700 hover:border-amber-300 hover:text-amber-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-300"
+                    >
+                      Admin Dashboard
+                    </Link>
+                  )}
                 </>
               )}
             </div>
@@ -127,6 +136,14 @@ export default function Navigation({ user }) {
               >
                 Add Location
               </Link>
+              {user.role === 'admin' && (
+                <Link
+                  href="/dashboard"
+                  className="block pl-3 pr-4 py-2 border-l-4 text-base font-medium border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700"
+                >
+                  Admin Dashboard
+                </Link>
+              )}
             </>
           )}
         </div>
