@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Head, useForm } from '@inertiajs/react';
 import Navigation from '../../components/Navigation';
 
-export default function AdminDashboard({ users }) {
+export default function AdminDashboard({ users, user }) {
   const [searchTerm, setSearchTerm] = useState('');
   const { delete: destroy, processing } = useForm();
 
@@ -22,7 +22,7 @@ export default function AdminDashboard({ users }) {
     <>
       <Head title="Admin Dashboard" />
       <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
-        <Navigation user={{ role: 'admin' }} />
+        <Navigation user={user} />
         
         <div className="py-10">
           <header>
@@ -128,7 +128,7 @@ export default function AdminDashboard({ users }) {
                                 </span>
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-amber-700">
-                                {user.locations?.length || 0}
+                                {user.locations_count || 0}
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 {user.role !== 'admin' && (
