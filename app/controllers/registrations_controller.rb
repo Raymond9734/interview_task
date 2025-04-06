@@ -11,7 +11,6 @@ class RegistrationsController < ApplicationController
     Rails.logger.debug "Received params: #{params.inspect}"
     
     user = User.new(user_params)
-    user.role = 'user' # Set default role
     
     if user.save
       session[:user_id] = user.id
@@ -32,11 +31,13 @@ class RegistrationsController < ApplicationController
   def user_params
     # Try to get parameters from either the registration namespace or root level
     params_to_use = if params[:registration]
-                      params[:registration].permit(:email, :username, :password, :password_confirmation)
+                      params[:registration].permit(:email, :username, :password, :password_confirmation, :role)
                     else
-                      params.permit(:email, :username, :password, :password_confirmation)
+                      params.permit(:email, :username, :password, :password_confirmation, :role)
                     end
     
+    # Ensure role is either 'user' or 'admin', default to 'user'
+    params_to_use[:role] = params_to_use[:role].in?(%w[user admin]) ? params_to_use[:role] : 'user'
     params_to_use
   end
 end 
