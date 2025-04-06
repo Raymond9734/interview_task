@@ -127,7 +127,7 @@ function BoundsHandler({ locations, selectedLocation, isNewLocationMap }) {
   return null;
 }
 
-export default function Map({ 
+const Map = React.forwardRef(({ 
   locations = [], 
   onMapClick, 
   center = [-0.0236, 37.9062],
@@ -136,7 +136,7 @@ export default function Map({
   selectedLocation,
   currentPosition: externalCurrentPosition = null,
   isNewLocationMap = false
-}) {
+}, ref) => {
   const [currentPosition, setCurrentPosition] = useState(externalCurrentPosition);
   const [showLocationPrompt, setShowLocationPrompt] = useState(false);
   const [mapReady, setMapReady] = useState(false);
@@ -433,4 +433,6 @@ export default function Map({
       )}
     </div>
   );
-} 
+});
+
+export default Map; 
