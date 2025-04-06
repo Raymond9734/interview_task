@@ -1,13 +1,25 @@
 [phases.setup]
-nixPkgs = ['nodejs', 'postgresql', 'vips']
+nixPkgs = [
+  'postgresql',
+  'vips',
+  'nodejs-18_x'  # Specifically requesting Node.js 18.x
+]
+
+[phases.install]
+cmds = [
+  'npm config set legacy-peer-deps true',
+  'bundle install',
+  'npm install'
+]
 
 [phases.build]
 cmds = [
-  'bundle install',
-  'npm install',
   'npm run build',
   'bundle exec rails assets:precompile'
 ]
 
 [start]
 cmd = 'bundle exec rails server -p ${PORT:-3000} -e production'
+
+[variables]
+NODE_VERSION = "18.19.0"
