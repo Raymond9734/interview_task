@@ -8,24 +8,25 @@ nixPkgs = [
 version = "18.19.0"
 nodeEnv = "production"
 
-# Define the working directory
-[phases.setup.working_dir]
-path = "/app"
-
-# Copy necessary files
+# Copy all files to the build directory
 [phases.copy]
-paths = [
-  ["package.json", "/app/package.json"],
-  ["package-lock.json", "/app/package-lock.json"],
-  ["Gemfile", "/app/Gemfile"],
-  ["Gemfile.lock", "/app/Gemfile.lock"],
-  [".", "/app"]
+path = "."
+include = [
+  "package.json",
+  "package-lock.json",
+  "Gemfile",
+  "Gemfile.lock",
+  "app",
+  "config",
+  "public",
+  "bin",
+  "lib",
+  "db",
+  "vendor"
 ]
 
 [phases.install]
 cmds = [
-  # Ensure we're in the correct directory
-  'cd /app',
   # Set npm config
   'npm config set legacy-peer-deps true',
   # Install production dependencies
@@ -37,14 +38,13 @@ cmds = [
 
 [phases.build]
 cmds = [
-  'cd /app',
   # Build assets
   'npm run build',
   'bundle exec rails assets:precompile RAILS_ENV=production'
 ]
 
 [start]
-cmd = 'cd /app && bundle exec rails server -p ${PORT:-3000} -e production'
+cmd = 'bundle exec rails server -p ${PORT:-3000} -e production'
 
 [variables]
 NODE_ENV = "production"
