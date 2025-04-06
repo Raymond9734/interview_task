@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Head, useForm } from '@inertiajs/react';
 import Navigation from '../../components/Navigation';
 import Map from '../../components/Map';
@@ -15,7 +15,7 @@ export default function Edit({ location, user, allLocations = [] }) {
   const [locationPermission, setLocationPermission] = useState(null);
 
   // Get current position from local storage
-  React.useEffect(() => {
+  useEffect(() => {
     const savedPermission = localStorage.getItem('locationPermission');
     setLocationPermission(savedPermission);
     
