@@ -1,21 +1,28 @@
 [phases.setup]
 nixPkgs = [
   'postgresql',
-  'vips',
-  'nodejs-18_x'  # Specifically requesting Node.js 18.x
+  'vips'
 ]
+
+[phases.setup.nodejs]
+provider = "nodejs-slim"
+version = "18.19.0"
+installMethod = "standalone"
 
 [phases.install]
 cmds = [
+  # Remove any existing Node.js installations
+  'rm -rf /usr/local/bin/node /usr/local/bin/npm',
+  # Install dependencies
   'npm config set legacy-peer-deps true',
-  'bundle install',
-  'npm install'
+  'bundle install --deployment --without development test',
+  'npm ci --production'
 ]
 
 [phases.build]
 cmds = [
-  'npm run build',
-  'bundle exec rails assets:precompile'
+  'NODE_ENV=production npm run build',
+  'RAILS_ENV=production bundle exec rails assets:precompile'
 ]
 
 [start]
