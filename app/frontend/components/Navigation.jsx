@@ -6,9 +6,7 @@ export default function Navigation({ user }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
-    // Clear all local storage data
     localStorage.clear();
-    // Proceed with logout
     destroy('/logout');
   };
 
