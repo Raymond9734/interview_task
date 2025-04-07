@@ -1,7 +1,7 @@
 import React from 'react';
 import { useForm } from '@inertiajs/react';
 import { Head } from '@inertiajs/react';
-
+import Flash from '../../components/Flash';
 export default function Register({ errors = {}, user = {} }) {
   const { data, setData, post, processing } = useForm({
     email: user.email || '',
@@ -18,6 +18,7 @@ export default function Register({ errors = {}, user = {} }) {
 
   return (
     <>
+      <Flash />
       <Head title="Register" />
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-100 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8 p-10 bg-white/60 backdrop-blur-md rounded-3xl shadow-xl">
