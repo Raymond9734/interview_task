@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Head, useForm, router } from '@inertiajs/react';
 import Navigation from '../../components/Navigation';
 import { debounce } from 'lodash';
-
+import Flash from '../../components/Flash';
 export default function AdminDashboard({ users, user, pagination }) {
   const [searchTerm, setSearchTerm] = useState('');
   const { delete: destroy, processing } = useForm();
@@ -51,6 +51,7 @@ export default function AdminDashboard({ users, user, pagination }) {
 
   return (
     <>
+      <Flash />
       <Head title="Admin Dashboard" />
       <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
         <Navigation user={user} />
