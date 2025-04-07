@@ -76,8 +76,35 @@ class LocationsController < ApplicationController
   end
 
   def others
+    query = Location.where.not(user: current_user)
+                   .includes(:user)
+                   .search_by_term(params[:search])
+    
+    # Apply pagination with 4 items per page
+    per_page = 4
+    page = params[:page] || 1
+    total_count = query.count
+    
+    locations = query.order(created_at: :desc)
+                    .offset((page.to_i - 1) * per_page)
+                    .limit(per_page)
+    
     render inertia: 'Locations/OtherLocations', props: {
-      other_locations: Location.where.not(user: current_user).as_json(include: { user: { only: [:id, :username, :role] } }),
+      other_locations: locations.as_json(include: { user: { only: [:id, :username, :role] } }),
+      user: current_user,
+      pagination: {
+        current_page: page.to_i,
+        total: total_count,
+        per_page: per_page,
+        total_pages: (total_count.to_f / per_page).ceil
+      }
+    }
+  end
+
+  def index
+    all_locations = Location.all.includes(:user)
+    render inertia: 'Locations/Index', props: {
+      locations: all_locations.as_json(include: { user: { only: [:id, :username, :role] } }),
       user: current_user
     }
   end
