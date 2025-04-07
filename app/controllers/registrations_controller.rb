@@ -1,4 +1,5 @@
 class RegistrationsController < ApplicationController
+  # Redirect logged-in users to home, otherwise render the registration page
   def new
     if current_user
       redirect_to home_path
@@ -7,6 +8,7 @@ class RegistrationsController < ApplicationController
     end
   end
 
+  # Handle user registration form submission
   def create
     user = User.new(user_params)
 
@@ -25,6 +27,7 @@ class RegistrationsController < ApplicationController
 
   private
 
+  # Strong parameters: securely extract only the allowed fields
   def user_params
     # Try to get parameters from either the registration namespace or root level
     params_to_use = if params[:registration]
