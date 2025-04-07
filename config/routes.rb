@@ -8,6 +8,8 @@ Rails.application.routes.draw do
   post 'register', to: 'registrations#create'
   
   # Location routes
+  get 'locations/others', to: 'locations#others'
+  get 'locations/my', to: 'locations#my'
   resources :locations
   
   # Admin dashboard routes
