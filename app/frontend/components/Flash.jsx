@@ -9,10 +9,10 @@ export default function Flash() {
   useEffect(() => {
     if (flash?.notice || flash?.alert || flash?.error || Object.keys(errors || {}).length > 0) {
       setShouldRender(true);
-      // Trigger animation after component is rendered
+     
       setTimeout(() => setIsVisible(true), 100);
       
-      // Start hiding after 4.7s (to account for animation duration)
+    
       const timer = setTimeout(() => {
         setIsVisible(false);
         // Remove from DOM after animation completes
@@ -35,7 +35,7 @@ export default function Flash() {
         position: 'fixed',
         bottom: '1rem',
         right: '1rem',
-        zIndex: 999999 // Extremely high z-index to ensure it's above everything
+        zIndex: 999999 
       }}
     >
       {/* Success Message */}
