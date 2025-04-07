@@ -1,8 +1,11 @@
 class ApplicationController < ActionController::Base
+  include InertiaRails::Controller
+
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
 
   before_action :set_current_user
+  before_action :set_flash_messages
 
   private
 
@@ -21,4 +24,11 @@ class ApplicationController < ActionController::Base
     end
   end
   helper_method :authenticate_user!
+
+  def set_flash_messages
+    # Use Inertia's built-in flash handling
+    flash.now[:notice] = flash[:notice]
+    flash.now[:alert] = flash[:alert]
+    flash.now[:error] = flash[:error]
+  end
 end
