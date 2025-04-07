@@ -29,11 +29,16 @@ class LocationsController < ApplicationController
     if location.save
       redirect_to locations_path, notice: 'Location was successfully created.'
     else
+      # Convert validation errors to a more user-friendly format
+      error_messages = location.errors.full_messages.join(', ')
       render inertia: 'Locations/New', 
              props: { 
                errors: location.errors.messages,
                location: location_params,
-               user: current_user
+               user: current_user,
+               flash: {
+                 error: error_messages
+               }
              }, 
              status: :unprocessable_entity
     end
