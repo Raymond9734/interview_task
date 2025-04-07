@@ -1,22 +1,53 @@
-import React, { useState } from 'react';
-import { Head, useForm } from '@inertiajs/react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Head, useForm, router } from '@inertiajs/react';
 import Navigation from '../../components/Navigation';
+import { debounce } from 'lodash';
 
-export default function AdminDashboard({ users, user }) {
+export default function AdminDashboard({ users, user, pagination }) {
   const [searchTerm, setSearchTerm] = useState('');
   const { delete: destroy, processing } = useForm();
 
-  const handleDeleteUser = (userId) => {
-    if (confirm('Are you sure you want to delete this user?')) {
-      destroy(`/dashboard/users/${userId}`);
-    }
+  const debouncedSearch = useCallback(
+    debounce((value) => {
+      router.get('/dashboard', {
+        page: 1,
+        per_page: pagination.per_page,
+        search: value,
+      }, {
+        preserveScroll: true,
+        preserveState: true,
+        replace: true
+      });
+    }, 500),
+    [] // Empty dependency array since we want this to be created only once
+  );
+
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    debouncedSearch(value);
   };
 
-  const filteredUsers = users.filter(
-    (user) =>
-      user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handlePageChange = (page) => {
+    router.get('/dashboard', { 
+      page,
+      per_page: pagination.per_page,
+      search: searchTerm,
+      preserveState: true,
+      preserveScroll: true 
+    }, {
+      preserveScroll: true,
+      preserveState: true,
+      replace: true
+    });
+  };
+
+  // Cleanup debounce on unmount
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [debouncedSearch]);
 
   return (
     <>
@@ -25,16 +56,12 @@ export default function AdminDashboard({ users, user }) {
         <Navigation user={user} />
         
         <div className="py-10">
-          <header>
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <h1 className="text-3xl font-bold leading-tight text-amber-900 font-[Poppins]">Admin Dashboard</h1>
-            </div>
-          </header>
+     
           <main>
             <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-              <div className="px-4 py-8 sm:px-0">
+              <div className="px-4 py-4 sm:px-0">
                 <div className="bg-white/60 backdrop-blur-md shadow-xl overflow-hidden sm:rounded-3xl transition-all duration-300 hover:shadow-2xl">
-                  <div className="px-4 py-5 sm:px-6">
+                  <div className="px-4 py-4 sm:px-6">
                     <h3 className="text-lg leading-6 font-medium text-amber-900">User Management</h3>
                     <p className="mt-1 max-w-2xl text-sm text-amber-700">
                       Manage users and their locations.
@@ -54,7 +81,7 @@ export default function AdminDashboard({ users, user }) {
                           className="appearance-none relative block w-full px-4 py-3 border-0 border-b-2 border-amber-300/50 bg-amber-50/20 placeholder-amber-700/50 text-amber-950 rounded-xl focus:outline-none focus:ring-0 focus:border-amber-600/50 focus:bg-amber-50/30 transition-all duration-300 ease-in-out sm:text-sm"
                           placeholder="Search by username or email"
                           value={searchTerm}
-                          onChange={(e) => setSearchTerm(e.target.value)}
+                          onChange={handleSearchChange}
                         />
                         <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                           <svg
@@ -108,7 +135,7 @@ export default function AdminDashboard({ users, user }) {
                           </tr>
                         </thead>
                         <tbody className="bg-white/60 divide-y divide-amber-200/50">
-                          {filteredUsers.map((user) => (
+                          {users.map((user) => (
                             <tr key={user.id} className="hover:bg-amber-50/30 transition-colors duration-200">
                               <td className="px-6 py-4 whitespace-nowrap">
                                 <div className="text-sm font-medium text-amber-900">{user.username}</div>
@@ -146,6 +173,63 @@ export default function AdminDashboard({ users, user }) {
                         </tbody>
                       </table>
                     </div>
+
+                    {/* Pagination Controls */}
+                    <div className="px-6 py-4 flex items-center justify-between border-t border-amber-200/50">
+                      <div className="flex-1 flex justify-between sm:hidden">
+                        <button
+                          onClick={() => handlePageChange(pagination.current_page - 1)}
+                          disabled={pagination.current_page === 1}
+                          className={`relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-md shadow-sm
+                            ${pagination.current_page === 1 
+                              ? 'bg-amber-50 text-amber-400 cursor-not-allowed'
+                              : 'bg-amber-100 text-amber-700 hover:bg-amber-200 hover:shadow-md transform hover:-translate-y-0.5 transition-all duration-200'
+                            }`}
+                        >
+                          Previous
+                        </button>
+                        <button
+                          onClick={() => handlePageChange(pagination.current_page + 1)}
+                          disabled={pagination.current_page === pagination.total_pages}
+                          className={`relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-md shadow-sm
+                            ${pagination.current_page === pagination.total_pages
+                              ? 'bg-amber-50 text-amber-400 cursor-not-allowed'
+                              : 'bg-amber-100 text-amber-700 hover:bg-amber-200 hover:shadow-md transform hover:-translate-y-0.5 transition-all duration-200'
+                            }`}
+                        >
+                          Next
+                        </button>
+                      </div>
+                      <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                        <div className="flex items-center space-x-4">
+                          <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                            <button
+                              onClick={() => handlePageChange(pagination.current_page - 1)}
+                              disabled={pagination.current_page === 1}
+                              className="relative inline-flex items-center px-4 py-2 rounded-l-md border text-sm font-medium shadow-sm bg-white text-amber-700 hover:bg-amber-50 hover:shadow-md transform hover:-translate-y-0.5 transition-all duration-200 disabled:bg-amber-50 disabled:text-amber-400 disabled:cursor-not-allowed"
+                            >
+                              <span className="sr-only">Previous</span>
+                              <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                            </button>
+                            <div className="flex items-center px-4 py-2 text-sm font-medium text-amber-700 bg-white border-t border-b border-amber-200">
+                              Page {pagination.current_page} of {pagination.total_pages}
+                            </div>
+                            <button
+                              onClick={() => handlePageChange(pagination.current_page + 1)}
+                              disabled={pagination.current_page === pagination.total_pages}
+                              className="relative inline-flex items-center px-4 py-2 rounded-r-md border text-sm font-medium shadow-sm bg-white text-amber-700 hover:bg-amber-50 hover:shadow-md transform hover:-translate-y-0.5 transition-all duration-200 disabled:bg-amber-50 disabled:text-amber-400 disabled:cursor-not-allowed"
+                            >
+                              <span className="sr-only">Next</span>
+                              <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                              </svg>
+                            </button>
+                          </nav>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -155,4 +239,4 @@ export default function AdminDashboard({ users, user }) {
       </div>
     </>
   );
-} 
+}
