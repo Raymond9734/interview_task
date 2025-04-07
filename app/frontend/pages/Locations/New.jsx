@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Head, useForm } from '@inertiajs/react';
 import Navigation from '../../components/Navigation';
 import Map from '../../components/Map';
-
+import Flash from '../../components/Flash';
 export default function New({ user, allLocations = [] }) {
   const { data, setData, post, processing, errors, reset } = useForm({
     name: '',
@@ -51,21 +51,24 @@ export default function New({ user, allLocations = [] }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     post('/locations', {
+      preserveScroll: true,
       onSuccess: () => {
-        // Clear form data
         reset();
-        // Reset selected position
         setSelectedPosition(null);
-        // Reset map view
         if (mapRef.current) {
           mapRef.current.setView([-0.0236, 37.9062], 6);
         }
       },
+      onError: (errors) => {
+        // The Flash component will handle displaying these errors
+      }
     });
   };
 
   return (
     <>
+      <Flash />
+      
       <Head title="Add New Location" />
       <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
         <Navigation user={user} />
