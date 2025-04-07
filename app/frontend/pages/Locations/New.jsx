@@ -4,7 +4,7 @@ import Navigation from '../../components/Navigation';
 import Map from '../../components/Map';
 
 export default function New({ user, allLocations = [] }) {
-  const { data, setData, post, processing, errors } = useForm({
+  const { data, setData, post, processing, errors, reset } = useForm({
     name: '',
     latitude: '',
     longitude: '',
@@ -50,7 +50,18 @@ export default function New({ user, allLocations = [] }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    post('/locations');
+    post('/locations', {
+      onSuccess: () => {
+        // Clear form data
+        reset();
+        // Reset selected position
+        setSelectedPosition(null);
+        // Reset map view
+        if (mapRef.current) {
+          mapRef.current.setView([-0.0236, 37.9062], 6);
+        }
+      },
+    });
   };
 
   return (
