@@ -14,4 +14,16 @@ class User < ApplicationRecord
   def locations_count
     locations.size
   end
+
+  scope :search_by_term, ->(term) {
+    return all unless term.present?
+    
+    search_term = "%#{term}%"
+    
+    if ActiveRecord::Base.connection.adapter_name.downcase == 'postgresql'
+      where('username ILIKE ? OR email ILIKE ?', search_term, search_term)
+    else
+      where('LOWER(username) LIKE LOWER(?) OR LOWER(email) LIKE LOWER(?)', search_term, search_term)
+    end
+  }
 end 
