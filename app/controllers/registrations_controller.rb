@@ -8,7 +8,6 @@ class RegistrationsController < ApplicationController
   end
 
   def create
-    Rails.logger.debug "Received params: #{params.inspect}"
     
     user = User.new(user_params)
     
@@ -16,7 +15,6 @@ class RegistrationsController < ApplicationController
       session[:user_id] = user.id
       redirect_to home_path, notice: 'Account created successfully!'
     else
-      Rails.logger.debug "User errors: #{user.errors.full_messages}"
       render inertia: 'Auth/Register', 
              props: { 
                errors: user.errors.messages,
