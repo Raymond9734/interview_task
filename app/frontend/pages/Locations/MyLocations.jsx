@@ -3,6 +3,7 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import Navigation from '../../components/Navigation';
 import LocationPin from '../../components/LocationPin';
 import Map from '../../components/Map';
+import Flash from '../../components/Flash';
 
 export default function MyLocations({ user_locations, user }) {
   const [selectedLocation, setSelectedLocation] = useState(null);
@@ -32,6 +33,7 @@ export default function MyLocations({ user_locations, user }) {
 
   return (
     <>
+      <Flash />
       <Head title="My Locations" />
       <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
         <Navigation user={user} />
