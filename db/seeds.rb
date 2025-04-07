@@ -41,6 +41,34 @@ KENYA_LOCATIONS = [
   { name: "Tsavo East National Park", lat: -2.7833, lng: 38.4667 }
 ]
 
+# Helper method to create location with unique name
+def create_unique_location(user, base_location, attempt = 0)
+  lat_variation = rand(-0.4..0.4)
+  lng_variation = rand(-0.4..0.4)
+  
+  suffix = attempt == 0 ? "" : " #{attempt}"
+  name = "#{user.username}'s #{base_location[:name]} Point#{suffix}"
+  
+  begin
+    Location.create!(
+      name: name,
+      latitude: base_location[:lat] + lat_variation,
+      longitude: base_location[:lng] + lng_variation,
+      user: user
+    )
+  rescue ActiveRecord::RecordInvalid => e
+    if e.message.include?('Name has already been taken')
+      # Try again with incremented suffix
+      create_unique_location(user, base_location, attempt + 1)
+    elsif e.message.include?('Latitude and longitude combination already exists')
+      # Try again with new random variations
+      create_unique_location(user, base_location, attempt)
+    else
+      raise e
+    end
+  end
+end
+
 # Create 50 regular users with random locations
 puts "Creating 50 users with random locations..."
 50.times do |i|
@@ -55,28 +83,14 @@ puts "Creating 50 users with random locations..."
   # Create 1-3 random locations for each user
   rand(1..3).times do
     base_location = KENYA_LOCATIONS.sample
-    # Add some random variation to the coordinates (within roughly 50km)
-    lat_variation = rand(-0.4..0.4)
-    lng_variation = rand(-0.4..0.4)
-    
-    Location.create!(
-      name: "#{user.username}'s #{base_location[:name]} Point",
-      latitude: base_location[:lat] + lat_variation,
-      longitude: base_location[:lng] + lng_variation,
-      user: user
-    )
+    create_unique_location(user, base_location)
   end
 end
 
 # Create some locations for admin
 3.times do
   base_location = KENYA_LOCATIONS.sample
-  Location.create!(
-    name: "Admin's #{base_location[:name]} Point",
-    latitude: base_location[:lat],
-    longitude: base_location[:lng],
-    user: admin
-  )
+  create_unique_location(admin, base_location)
 end
 
 puts "Seed completed!"
