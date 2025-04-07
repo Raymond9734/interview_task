@@ -53,3 +53,4 @@ node_modules
 # Ignore PostgreSQL data directory if you're using it locally
 /postgres-data
 
+.qodo
