@@ -12,6 +12,7 @@ class Location < ApplicationRecord
 
     search_term = "%#{term}%"
 
+    # Conditional logic to handle different database adapters ( PostgreSQL or sQlite)
     if ActiveRecord::Base.connection.adapter_name.downcase == "postgresql"
       where("name ILIKE ? OR latitude::text ILIKE ? OR longitude::text ILIKE ?",
             search_term, search_term, search_term)
