@@ -1,27 +1,27 @@
 Rails.application.routes.draw do
   # Authentication routes
-  get 'login', to: 'sessions#new'
-  post 'login', to: 'sessions#create'
-  delete 'logout', to: 'sessions#destroy'
-  
-  get 'register', to: 'registrations#new'
-  post 'register', to: 'registrations#create'
-  
+  get "login", to: "sessions#new"
+  post "login", to: "sessions#create"
+  delete "logout", to: "sessions#destroy"
+
+  get "register", to: "registrations#new"
+  post "register", to: "registrations#create"
+
   # Location routes
-  get 'locations/others', to: 'locations#others'
-  get 'locations/my', to: 'locations#my'
+  get "locations/others", to: "locations#others"
+  get "locations/my", to: "locations#my"
   resources :locations
-  
+
   # Admin dashboard routes
-  get 'dashboard', to: 'dashboard#index'
-  delete 'dashboard/users/:id', to: 'dashboard#destroy_user', as: :destroy_user
-  
+  get "dashboard", to: "dashboard#index"
+  delete "dashboard/users/:id", to: "dashboard#destroy_user", as: :destroy_user
+
   # Root path is now login
-  root 'sessions#new'
-  
+  root "sessions#new"
+
   # Home page for authenticated users
-  get 'home', to: 'home#index', as: :home
-  
+  get "home", to: "home#index", as: :home
+
   # Health check route
   get "up" => "rails/health#show", as: :rails_health_check
 

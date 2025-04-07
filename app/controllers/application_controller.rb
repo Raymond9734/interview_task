@@ -20,7 +20,7 @@ class ApplicationController < ActionController::Base
 
   def authenticate_user!
     unless current_user
-      redirect_to login_path, alert: 'You need to sign in to access this page.'
+      redirect_to login_path, alert: "You need to sign in to access this page."
     end
   end
   helper_method :authenticate_user!

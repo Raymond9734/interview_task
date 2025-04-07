@@ -45,10 +45,10 @@ KENYA_LOCATIONS = [
 def create_unique_location(user, base_location, attempt = 0)
   lat_variation = rand(-0.4..0.4)
   lng_variation = rand(-0.4..0.4)
-  
+
   suffix = attempt == 0 ? "" : " #{attempt}"
   name = "#{user.username}'s #{base_location[:name]} Point#{suffix}"
-  
+
   begin
     Location.create!(
       name: name,
@@ -79,7 +79,7 @@ puts "Creating 50 users with random locations..."
     password: 'password123',
     role: 'user'
   )
-  
+
   # Create 1-3 random locations for each user
   rand(1..3).times do
     base_location = KENYA_LOCATIONS.sample

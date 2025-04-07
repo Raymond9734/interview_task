@@ -8,4 +8,4 @@ namespace :db do
       Rake::Task["db:setup"].invoke
     end
   end
-end 
+end
