@@ -2,7 +2,7 @@ import React, { useState,useEffect } from 'react';
 import { Head, useForm } from '@inertiajs/react';
 import Navigation from '../../components/Navigation';
 import Map from '../../components/Map';
-
+import Flash from '../../components/Flash';
 export default function Edit({ location, user, allLocations = [] }) {
   const { data, setData, put, processing, errors } = useForm({
     name: location.name,
@@ -49,6 +49,7 @@ export default function Edit({ location, user, allLocations = [] }) {
 
   return (
     <>
+      <Flash />
       <Head title={`Edit ${location.name}`} />
       <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
         <Navigation user={user} />
