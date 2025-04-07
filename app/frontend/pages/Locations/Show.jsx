@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import Navigation from '../../components/Navigation';
 import Map from '../../components/Map';
+import Flash from '../../components/Flash';
 
 export default function Show({ location, user, allLocations = [] }) {
   const isOwner = user && user.id === location.user_id;
@@ -27,6 +28,7 @@ export default function Show({ location, user, allLocations = [] }) {
 
   return (
     <>
+      <Flash />
       <Head title={location.name} />
       <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
         <Navigation user={user} />
