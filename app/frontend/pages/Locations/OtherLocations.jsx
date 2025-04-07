@@ -4,6 +4,7 @@ import debounce from 'lodash/debounce';
 import Navigation from '../../components/Navigation';
 import LocationPin from '../../components/LocationPin';
 import Map from '../../components/Map';
+import Flash from '../../components/Flash';
 
 export default function OtherLocations({ other_locations, user, pagination }) {
   const [selectedLocation, setSelectedLocation] = useState(null);
@@ -13,9 +14,6 @@ export default function OtherLocations({ other_locations, user, pagination }) {
   const [isLoading, setIsLoading] = useState(false);
   const mapRef = useRef(null);
 
-  // Remove the infinite scroll related refs and effects
-  // const observerRef = useRef(null);
-  // const loadingRef = useRef(null);
 
   // Debounced search function
   const debouncedSearch = useCallback(
@@ -93,6 +91,7 @@ export default function OtherLocations({ other_locations, user, pagination }) {
 
   return (
     <>
+      <Flash />
       <Head title="Other Users' Locations" />
       <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
         <Navigation user={user} className="fixed top-0 left-0 right-0 z-50" />
