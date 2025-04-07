@@ -3,23 +3,7 @@ class LocationsController < ApplicationController
   before_action :set_location, only: [:show, :edit, :update, :destroy]
   before_action :authorize_user, only: [:edit, :update, :destroy]
 
-  def index
-    # Add debug logs
-    Rails.logger.debug "Current user: #{current_user.inspect}"
-    
-    all_locations = Location.all.includes(:user)
-    @user_locations = all_locations.where(user: current_user)
-    @other_locations = all_locations.where.not(user: current_user)
-    
-    Rails.logger.debug "User locations: #{@user_locations.inspect}"
-    Rails.logger.debug "Other locations: #{@other_locations.inspect}"
-    
-    render inertia: 'Locations/Index', props: { 
-      user_locations: @user_locations.as_json(include: { user: { only: [:id, :username, :role] } }),
-      other_locations: @other_locations.as_json(include: { user: { only: [:id, :username, :role] } }),
-      user: current_user
-    }
-  end
+ 
 
   def show
     @location = Location.includes(:user).find(params[:id])
@@ -82,6 +66,20 @@ class LocationsController < ApplicationController
   def destroy
     @location.destroy
     redirect_to locations_path, notice: 'Location was successfully deleted.'
+  end
+
+  def my
+    render inertia: 'Locations/MyLocations', props: {
+      user_locations: current_user.locations.as_json(include: { user: { only: [:id, :username, :role] } }),
+      user: current_user
+    }
+  end
+
+  def others
+    render inertia: 'Locations/OtherLocations', props: {
+      other_locations: Location.where.not(user: current_user).as_json(include: { user: { only: [:id, :username, :role] } }),
+      user: current_user
+    }
   end
 
   private
